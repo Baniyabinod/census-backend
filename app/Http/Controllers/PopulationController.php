@@ -24,38 +24,70 @@ class PopulationController extends Controller
         */
     }
 
-    public function getPoulationByReligion(){
-        $data = DB::table('coded_census')
-        ->select('religion', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('religion')
-        ->get();
-        return response()->json($data);
+    public function getPopulationByGroup(Request $request) {
+        // Retrieve the grouping field from the request, default to 'religion'
+        $groupByField = $request->input('group_by', 'religion');
+        
+        // Validate the grouping field to ensure it's one of the expected values
+        if (!in_array($groupByField, ['religion', 'etnisitet_fars_etnisitet_i_1875','famstatus_pos_en','sivilstatus','occ_hierarkisk_hovedyrke', 'occ_hierarkisk_biyrke', 'sykdom','spraak', 'statsborgerskap'])) {
+            return response()->json(['error' => 'Invalid group by field'], 400);
+        }
+    
+        // Log the grouping field for debugging
+        \Log::info("Grouping by: $groupByField");
+    
+        try {
+            // Execute the query with dynamic grouping
+            $data = DB::table('coded_census')
+                ->select($groupByField, DB::raw('COUNT(*) as Number_of_Persons'))
+                ->where('kilde', 'census_1910')
+                ->groupBy($groupByField)
+                ->get();
+    
+            // Log the query result
+            \Log::info("Query Result: " . json_encode($data));
+    
+            return response()->json($data);
+        } catch (\Exception $e) {
+            // Log any exception that occurs
+            \Log::error("Query Error: " . $e->getMessage());
+            return response()->json(['error' => 'An error occurred'], 500);
+        }
     }
+    
 
-    public function getPopulationByEthnicity(){
-        $data = DB::table('coded_census')
-        ->select('etnisitet_fars_etnisitet_i_1875', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('etnisitet_fars_etnisitet_i_1875')
-        ->get();
-        return response()->json($data);
 
+    
+
+    public function getPopulationByAgeRange(Request $request) {
+        // Retrieve and cast parameters to integer
+        $min_age = (int) $request->input('min_age', 20);
+        $max_age = (int) $request->input('max_age', 30);
+    
+        try {
+            // Execute the query
+            $data = DB::table('coded_census')
+                ->select('kjonn', DB::raw('COUNT(*) as Number_of_Persons'))
+                ->where('kilde', 'census_1910')
+                ->whereBetween(
+                    DB::raw('1910 - CAST(faar AS INTEGER)'), 
+                    [$min_age, $max_age]
+                )
+                ->groupBy('kjonn')
+                ->get();
+    
+            return response()->json($data);
+        } catch (\Exception $e) {
+            // Log any exception that occurs
+            \Log::error("Query Error: " . $e->getMessage());
+            return response()->json(['error' => 'An error occurred'], 500);
+        }
     }
+    
+    
+    
+    
 
-    public function getPopulationByAge(){
-        $data = DB::table('coded_census')
-        ->select('kjonn', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->whereBetween(
-            DB::raw('1910 - CAST(faar AS INTEGER)'), 
-            [20, 30]
-        )
-        ->groupBy('kjonn')
-        ->get();
-        return response()->json($data);
-
-    }
 
     public function getPopulationByGender(){
         $data = DB::table('coded_census')
@@ -66,23 +98,6 @@ class PopulationController extends Controller
         return response()->json($data);
     }
 
-    public function getPopulationByFamilyPosition(){
-        $data = DB::table('coded_census')
-        ->select('famstatus_pos_en', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('famstatus_pos_en')
-        ->get();
-        return response()->json($data);
-    }
-
-    public function getPopulationByMaritalStatus(){
-        $data = DB::table('coded_census')
-        ->select('sivilstatus', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('sivilstatus')
-        ->get();
-        return response()->json($data);
-    }
 
     public function getTotalPopulation(){
         $data = DB::table('coded_census')
@@ -124,25 +139,6 @@ class PopulationController extends Controller
     }
 
 
-    public function getPersonsGroupedByPrimaryOccupation(){
-        $data = DB::table('coded_census')
-        ->select('occ_hierarkisk_hovedyrke', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('occ_hierarkisk_hovedyrke')
-        ->get();
-    
-        return response()->json($data);
-    }
-
-    public function getPersonsGroupedBySecondaryOccupation(){
-        $data = DB::table('coded_census')
-        ->select('occ_hierarkisk_biyrke', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('occ_hierarkisk_biyrke')
-        ->get();
-    
-        return response()->json($data);
-    }
 
     public function getPersonsGroupedByMunicipality(){
         $data = DB::table('coded_census')
@@ -174,35 +170,7 @@ class PopulationController extends Controller
         return response()->json($data);
     }
 
-    public function getPersonsGroupedByMedicalCondition(){
-        $data = DB::table('coded_census')
-        ->select('sykdom', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('sykdom')
-        ->get();
-    
-        return response()->json($data);
-    }
 
-    public function getPersonsGroupedByLanguage(){
-        $data = DB::table('coded_census')
-        ->select('spraak', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('spraak')
-        ->get();
-    
-        return response()->json($data);
-    }
-
-    public function getPersonsGroupedByCitizenship(){
-        $data = DB::table('coded_census')
-        ->select('statsborgerskap', DB::raw('COUNT(*) as Number_of_Persons'))
-        ->where('kilde', 'census_1910')
-        ->groupBy('statsborgerskap')
-        ->get();
-    
-        return response()->json($data);
-    }
 
     public function getPersonsGroupedByBirthRegion(){
         $data = DB::table('coded_census')
@@ -223,6 +191,198 @@ class PopulationController extends Controller
     
         return response()->json($data);
     }
+
+    public function getAgeGroups()
+    {
+        $ageGroups = DB::table('coded_census')
+            ->select(DB::raw("
+                CASE 
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 0 AND 4 THEN '0-4'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 5 AND 9 THEN '5-9'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 10 AND 14 THEN '10-14'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 15 AND 19 THEN '15-19'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 20 AND 24 THEN '20-24'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 25 AND 29 THEN '25-29'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 30 AND 34 THEN '30-34'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 35 AND 39 THEN '35-39'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 40 AND 44 THEN '40-44'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 45 AND 49 THEN '45-49'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 50 AND 54 THEN '50-54'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 55 AND 59 THEN '55-59'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 60 AND 64 THEN '60-64'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 65 AND 69 THEN '65-69'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 70 AND 74 THEN '70-74'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 75 AND 79 THEN '75-79'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 80 AND 84 THEN '80-84'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 85 AND 89 THEN '85-89'
+                    WHEN (1910 - CAST(faar AS INTEGER)) >= 90 THEN '90+'
+                    ELSE 'Unknown'
+                END AS age_group,
+                COUNT(*) AS number_of_people
+            "))
+            ->where('kilde', 'census_1910')
+            ->groupBy('age_group')
+            ->orderBy('age_group')
+            ->get();
+        return response()->json($ageGroups);
+    }
+
+    public function getAgeGenderGroups()
+    {
+        $ageGenderGroups = DB::table('coded_census')
+            ->select(DB::raw("
+                CASE 
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 0 AND 4 THEN '0-4'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 5 AND 9 THEN '5-9'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 10 AND 14 THEN '10-14'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 15 AND 19 THEN '15-19'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 20 AND 24 THEN '20-24'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 25 AND 29 THEN '25-29'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 30 AND 34 THEN '30-34'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 35 AND 39 THEN '35-39'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 40 AND 44 THEN '40-44'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 45 AND 49 THEN '45-49'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 50 AND 54 THEN '50-54'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 55 AND 59 THEN '55-59'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 60 AND 64 THEN '60-64'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 65 AND 69 THEN '65-69'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 70 AND 74 THEN '70-74'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 75 AND 79 THEN '75-79'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 80 AND 84 THEN '80-84'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 85 AND 89 THEN '85-89'
+                    WHEN (1910 - CAST(faar AS INTEGER)) >= 90 THEN '90+'
+                    ELSE 'Unknown'
+                END AS age_group,
+                kjonn AS gender,
+                COUNT(*) AS number_of_people
+            "))
+            ->where('kilde', 'census_1910')
+            ->groupBy('age_group', 'gender')
+            ->orderBy('age_group')
+            ->orderBy('gender')
+            ->get();
+        return response()->json($ageGenderGroups);
+    }
+
+
+    public function getAgeMaritalGroups()
+    {
+        $ageMaritalGroups = DB::table('coded_census')
+            ->select(DB::raw("
+                CASE 
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 0 AND 4 THEN '0-4'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 5 AND 9 THEN '5-9'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 10 AND 14 THEN '10-14'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 15 AND 19 THEN '15-19'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 20 AND 24 THEN '20-24'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 25 AND 29 THEN '25-29'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 30 AND 34 THEN '30-34'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 35 AND 39 THEN '35-39'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 40 AND 44 THEN '40-44'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 45 AND 49 THEN '45-49'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 50 AND 54 THEN '50-54'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 55 AND 59 THEN '55-59'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 60 AND 64 THEN '60-64'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 65 AND 69 THEN '65-69'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 70 AND 74 THEN '70-74'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 75 AND 79 THEN '75-79'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 80 AND 84 THEN '80-84'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 85 AND 89 THEN '85-89'
+                    WHEN (1910 - CAST(faar AS INTEGER)) >= 90 THEN '90+'
+                    ELSE 'Unknown'
+                END AS age_group,
+                sivilstatus AS marital_status,
+                COUNT(*) AS number_of_people
+            "))
+            ->where('kilde', 'census_1910')
+            ->groupBy('age_group', 'marital_status')
+            ->orderBy('age_group')
+            ->orderBy('marital_status')
+            ->get();
+        return response()->json($ageMaritalGroups);
+    }
+
+    public function getAgeGenderMaritalGroups()
+    {
+        $ageGenderMaritalGroups = DB::table('coded_census')
+            ->select(DB::raw("
+                CASE 
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 0 AND 4 THEN '0-4'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 5 AND 9 THEN '5-9'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 10 AND 14 THEN '10-14'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 15 AND 19 THEN '15-19'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 20 AND 24 THEN '20-24'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 25 AND 29 THEN '25-29'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 30 AND 34 THEN '30-34'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 35 AND 39 THEN '35-39'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 40 AND 44 THEN '40-44'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 45 AND 49 THEN '45-49'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 50 AND 54 THEN '50-54'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 55 AND 59 THEN '55-59'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 60 AND 64 THEN '60-64'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 65 AND 69 THEN '65-69'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 70 AND 74 THEN '70-74'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 75 AND 79 THEN '75-79'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 80 AND 84 THEN '80-84'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 85 AND 89 THEN '85-89'
+                    WHEN (1910 - CAST(faar AS INTEGER)) >= 90 THEN '90+'
+                    ELSE 'Unknown'
+                END AS age_group,
+                kjonn AS gender,
+                sivilstatus AS marital_status,
+                COUNT(*) AS number_of_people
+            "))
+            ->where('kilde', 'census_1910')
+            ->groupBy('age_group', 'gender', 'marital_status')
+            ->orderBy('age_group')
+            ->orderBy('gender')
+            ->orderBy('marital_status')
+            ->get();
+        return response()->json($ageGenderMaritalGroups);
+    }
+
+    public function getSingleAgeGenderGroups()
+    {
+        $singleAgeGenderGroups = DB::table('coded_census')
+            ->select(DB::raw("
+                CASE 
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 0 AND 4 THEN '0-4'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 5 AND 9 THEN '5-9'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 10 AND 14 THEN '10-14'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 15 AND 19 THEN '15-19'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 20 AND 24 THEN '20-24'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 25 AND 29 THEN '25-29'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 30 AND 34 THEN '30-34'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 35 AND 39 THEN '35-39'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 40 AND 44 THEN '40-44'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 45 AND 49 THEN '45-49'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 50 AND 54 THEN '50-54'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 55 AND 59 THEN '55-59'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 60 AND 64 THEN '60-64'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 65 AND 69 THEN '65-69'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 70 AND 74 THEN '70-74'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 75 AND 79 THEN '75-79'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 80 AND 84 THEN '80-84'
+                    WHEN (1910 - CAST(faar AS INTEGER)) BETWEEN 85 AND 89 THEN '85-89'
+                    WHEN (1910 - CAST(faar AS INTEGER)) >= 90 THEN '90+'
+                    ELSE 'Unknown'
+                END AS age_group,
+                kjonn AS gender,
+                COUNT(*) AS number_of_people
+            "))
+            ->where('sivilstatus', '6') // Assuming '6' represents 'Single'
+            ->where('kilde', 'census_1910')
+            ->groupBy('age_group', 'gender')
+            ->orderBy('age_group')
+            ->orderBy('gender')
+            ->get();
+        return response()->json($singleAgeGenderGroups);
+    }
+
+
+
+
+
 
     
 
