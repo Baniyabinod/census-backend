@@ -29,7 +29,8 @@ class DummyPopulationController extends Controller
         );
     }
 
-    public function getNumberOfAdults() {
+    public function getNumberOfAdults()
+    {
         return response()->json(
             [
                 [
@@ -39,7 +40,8 @@ class DummyPopulationController extends Controller
         );
     }
 
-    public function getNumberOfElderly() {
+    public function getNumberOfElderly()
+    {
         return response()->json(
             [
                 [
@@ -80,93 +82,97 @@ class DummyPopulationController extends Controller
     public function getAgeGenderGroups()
     {
         $dummyData = [
-            ["age_group" => "0-4", "gender" => "0", "number_of_people" => 50000],
+            ["age_group" => "0-4", "gender" => "2", "number_of_people" => 50000],
             ["age_group" => "0-4", "gender" => "1", "number_of_people" => 51000],
-            ["age_group" => "5-9", "gender" => "0", "number_of_people" => 48000],
+            ["age_group" => "5-9", "gender" => "2", "number_of_people" => 48000],
             ["age_group" => "5-9", "gender" => "1", "number_of_people" => 49000],
-            ["age_group" => "10-14", "gender" => "0", "number_of_people" => 45000],
+            ["age_group" => "10-14", "gender" => "2", "number_of_people" => 45000],
             ["age_group" => "10-14", "gender" => "1", "number_of_people" => 46000],
-            ["age_group" => "15-19", "gender" => "0", "number_of_people" => 43000],
+            ["age_group" => "15-19", "gender" => "2", "number_of_people" => 43000],
             ["age_group" => "15-19", "gender" => "1", "number_of_people" => 44000],
-            ["age_group" => "20-24", "gender" => "0", "number_of_people" => 42000],
+            ["age_group" => "20-24", "gender" => "2", "number_of_people" => 42000],
             ["age_group" => "20-24", "gender" => "1", "number_of_people" => 43000],
-            ["age_group" => "25-29", "gender" => "0", "number_of_people" => 41000],
+            ["age_group" => "25-29", "gender" => "2", "number_of_people" => 41000],
             ["age_group" => "25-29", "gender" => "1", "number_of_people" => 42000],
-            ["age_group" => "30-34", "gender" => "0", "number_of_people" => 40000],
+            ["age_group" => "30-34", "gender" => "2", "number_of_people" => 40000],
             ["age_group" => "30-34", "gender" => "1", "number_of_people" => 41000],
-            ["age_group" => "35-39", "gender" => "0", "number_of_people" => 39000],
+            ["age_group" => "35-39", "gender" => "2", "number_of_people" => 39000],
             ["age_group" => "35-39", "gender" => "1", "number_of_people" => 40000],
-            ["age_group" => "40-44", "gender" => "0", "number_of_people" => 38000],
+            ["age_group" => "40-44", "gender" => "2", "number_of_people" => 38000],
             ["age_group" => "40-44", "gender" => "1", "number_of_people" => 39000],
-            ["age_group" => "45-49", "gender" => "0", "number_of_people" => 37000],
+            ["age_group" => "45-49", "gender" => "2", "number_of_people" => 37000],
             ["age_group" => "45-49", "gender" => "1", "number_of_people" => 38000],
-            ["age_group" => "50-54", "gender" => "0", "number_of_people" => 36000],
+            ["age_group" => "50-54", "gender" => "2", "number_of_people" => 36000],
             ["age_group" => "50-54", "gender" => "1", "number_of_people" => 37000],
-            ["age_group" => "55-59", "gender" => "0", "number_of_people" => 35000],
+            ["age_group" => "55-59", "gender" => "2", "number_of_people" => 35000],
             ["age_group" => "55-59", "gender" => "1", "number_of_people" => 36000],
-            ["age_group" => "60-64", "gender" => "0", "number_of_people" => 34000],
+            ["age_group" => "60-64", "gender" => "2", "number_of_people" => 34000],
             ["age_group" => "60-64", "gender" => "1", "number_of_people" => 35000],
-            ["age_group" => "65-69", "gender" => "0", "number_of_people" => 33000],
+            ["age_group" => "65-69", "gender" => "2", "number_of_people" => 33000],
             ["age_group" => "65-69", "gender" => "1", "number_of_people" => 34000],
-            ["age_group" => "70-74", "gender" => "0", "number_of_people" => 32000],
+            ["age_group" => "70-74", "gender" => "2", "number_of_people" => 32000],
             ["age_group" => "70-74", "gender" => "1", "number_of_people" => 33000],
-            ["age_group" => "75-79", "gender" => "0", "number_of_people" => 31000],
+            ["age_group" => "75-79", "gender" => "2", "number_of_people" => 31000],
             ["age_group" => "75-79", "gender" => "1", "number_of_people" => 32000],
-            ["age_group" => "80-84", "gender" => "0", "number_of_people" => 30000],
+            ["age_group" => "80-84", "gender" => "2", "number_of_people" => 30000],
             ["age_group" => "80-84", "gender" => "1", "number_of_people" => 31000],
-            ["age_group" => "85-89", "gender" => "0", "number_of_people" => 29000],
+            ["age_group" => "85-89", "gender" => "2", "number_of_people" => 29000],
             ["age_group" => "85-89", "gender" => "1", "number_of_people" => 30000],
-            ["age_group" => "90+", "gender" => "0", "number_of_people" => 28000],
+            ["age_group" => "90+", "gender" => "2", "number_of_people" => 28000],
             ["age_group" => "90+", "gender" => "1", "number_of_people" => 29000]
         ];
 
         return response()->json($dummyData);
     }
 
-    public function getAgeMaritalGroups()
+    public function getAgeMaritalGroups(Request $request)
     {
-        $dummyData = [
-            ["age_group" => "0-4", "marital_status" => "1", "number_of_people" => 331],
-            ["age_group" => "0-4", "marital_status" => "4", "number_of_people" => 6],
-            ["age_group" => "5-9", "marital_status" => "1", "number_of_people" => 25000],
-            ["age_group" => "5-9", "marital_status" => "4", "number_of_people" => 1000],
-            ["age_group" => "10-14", "marital_status" => "1", "number_of_people" => 22000],
-            ["age_group" => "10-14", "marital_status" => "4", "number_of_people" => 800],
-            ["age_group" => "15-19", "marital_status" => "1", "number_of_people" => 21000],
-            ["age_group" => "15-19", "marital_status" => "4", "number_of_people" => 600],
-            ["age_group" => "20-24", "marital_status" => "1", "number_of_people" => 20000],
-            ["age_group" => "20-24", "marital_status" => "4", "number_of_people" => 700],
-            ["age_group" => "25-29", "marital_status" => "1", "number_of_people" => 19000],
-            ["age_group" => "25-29", "marital_status" => "4", "number_of_people" => 500],
-            ["age_group" => "30-34", "marital_status" => "1", "number_of_people" => 18000],
-            ["age_group" => "30-34", "marital_status" => "4", "number_of_people" => 450],
-            ["age_group" => "35-39", "marital_status" => "1", "number_of_people" => 17000],
-            ["age_group" => "35-39", "marital_status" => "4", "number_of_people" => 400],
-            ["age_group" => "40-44", "marital_status" => "1", "number_of_people" => 16000],
-            ["age_group" => "40-44", "marital_status" => "4", "number_of_people" => 350],
-            ["age_group" => "45-49", "marital_status" => "1", "number_of_people" => 15000],
-            ["age_group" => "45-49", "marital_status" => "4", "number_of_people" => 300],
-            ["age_group" => "50-54", "marital_status" => "1", "number_of_people" => 14000],
-            ["age_group" => "50-54", "marital_status" => "4", "number_of_people" => 250],
-            ["age_group" => "55-59", "marital_status" => "1", "number_of_people" => 13000],
-            ["age_group" => "55-59", "marital_status" => "4", "number_of_people" => 200],
-            ["age_group" => "60-64", "marital_status" => "1", "number_of_people" => 12000],
-            ["age_group" => "60-64", "marital_status" => "4", "number_of_people" => 150],
-            ["age_group" => "65-69", "marital_status" => "1", "number_of_people" => 11000],
-            ["age_group" => "65-69", "marital_status" => "4", "number_of_people" => 100],
-            ["age_group" => "70-74", "marital_status" => "1", "number_of_people" => 10000],
-            ["age_group" => "70-74", "marital_status" => "4", "number_of_people" => 80],
-            ["age_group" => "75-79", "marital_status" => "1", "number_of_people" => 9000],
-            ["age_group" => "75-79", "marital_status" => "4", "number_of_people" => 60],
-            ["age_group" => "80-84", "marital_status" => "1", "number_of_people" => 8000],
-            ["age_group" => "80-84", "marital_status" => "4", "number_of_people" => 40],
-            ["age_group" => "85-89", "marital_status" => "1", "number_of_people" => 7000],
-            ["age_group" => "85-89", "marital_status" => "4", "number_of_people" => 20],
-            ["age_group" => "90+", "marital_status" => "1", "number_of_people" => 6000],
-            ["age_group" => "90+", "marital_status" => "4", "number_of_people" => 10]
-        ];
+        if ($request->marital_status == "married") {
+            $ageGroups = [
+                ["age_group" => "0-4", "gender" => 1, "number_of_people" => 120],
+                ["age_group" => "0-4", "gender" => 2, "number_of_people" => 110],
+                ["age_group" => "5-9", "gender" => 1, "number_of_people" => 130],
+                ["age_group" => "5-9", "gender" => 2, "number_of_people" => 120],
+                ["age_group" => "10-14", "gender" => 1, "number_of_people" => 140],
+                ["age_group" => "10-14", "gender" => 2, "number_of_people" => 130],
+                ["age_group" => "15-19", "gender" => 1, "number_of_people" => 150],
+                ["age_group" => "15-19", "gender" => 2, "number_of_people" => 140],
+                ["age_group" => "20-24", "gender" => 1, "number_of_people" => 160],
+                ["age_group" => "20-24", "gender" => 2, "number_of_people" => 150],
+                ["age_group" => "25-29", "gender" => 1, "number_of_people" => 170],
+                ["age_group" => "25-29", "gender" => 2, "number_of_people" => 160],
+                ["age_group" => "30-34", "gender" => 1, "number_of_people" => 180],
+                ["age_group" => "30-34", "gender" => 2, "number_of_people" => 170],
+                ["age_group" => "35-39", "gender" => 1, "number_of_people" => 190],
+                ["age_group" => "35-39", "gender" => 2, "number_of_people" => 180],
+                ["age_group" => "40-44", "gender" => 1, "number_of_people" => 200],
+                ["age_group" => "40-44", "gender" => 2, "number_of_people" => 190],
+                ["age_group" => "45-49", "gender" => 1, "number_of_people" => 210],
+                ["age_group" => "45-49", "gender" => 2, "number_of_people" => 200],
+                ["age_group" => "50-54", "gender" => 1, "number_of_people" => 220],
+                ["age_group" => "50-54", "gender" => 2, "number_of_people" => 210],
+                ["age_group" => "55-59", "gender" => 1, "number_of_people" => 230],
+                ["age_group" => "55-59", "gender" => 2, "number_of_people" => 220],
+                ["age_group" => "60-64", "gender" => 1, "number_of_people" => 240],
+                ["age_group" => "60-64", "gender" => 2, "number_of_people" => 230],
+                ["age_group" => "65-69", "gender" => 1, "number_of_people" => 250],
+                ["age_group" => "65-69", "gender" => 2, "number_of_people" => 240],
+                ["age_group" => "70-74", "gender" => 1, "number_of_people" => 260],
+                ["age_group" => "70-74", "gender" => 2, "number_of_people" => 250],
+                ["age_group" => "75-79", "gender" => 1, "number_of_people" => 270],
+                ["age_group" => "75-79", "gender" => 2, "number_of_people" => 260],
+                ["age_group" => "80-84", "gender" => 1, "number_of_people" => 280],
+                ["age_group" => "80-84", "gender" => 2, "number_of_people" => 270],
+                ["age_group" => "85-89", "gender" => 1, "number_of_people" => 290],
+                ["age_group" => "85-89", "gender" => 2, "number_of_people" => 280],
+                ["age_group" => "90+", "gender" => 1, "number_of_people" => 300],
+                ["age_group" => "90+", "gender" => 2, "number_of_people" => 290]
+            ];
+        } else {
+            return response()->json($request->status);
+        }
 
-        return response()->json($dummyData);
+        return response()->json($ageGroups);
     }
 
     public function getAgeGenderMaritalGroups()
